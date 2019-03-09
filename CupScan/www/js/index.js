@@ -147,7 +147,14 @@ var app = {
         "block";
     } else {
       document.getElementById("numberOfCupsNotReturned").style.display =
-        "hidden";
+        "none";
+    }
+
+    if (this.numberOfCupsReturned >= 10) {
+      this.numberOfCupsReturned = 0;
+      this.numberOfCupsToReturn = 10;
+      this.percentOfCupsReturned = 0;
+      this.numberOfCupsNotReturned = 0;
     }
   }
 };
