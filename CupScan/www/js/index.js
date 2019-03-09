@@ -1,6 +1,11 @@
 var app = {
-    
+  numberOfCupsReturned: 6,
+  numberOfCupsToReturn: 4,
+  percentOfCupsReturned: 60,
+  numberOfCupsNotReturned: 0,
+
   initialize: function() {
+    M.AutoInit();
     document.addEventListener(
       "deviceready",
       this.onDeviceReady.bind(this),
@@ -9,13 +14,19 @@ var app = {
   },
 
   onDeviceReady: function() {
-    this.receivedEvent("deviceready");
+    this.initPush();
+    this.initNfc();
+  },
+
+  initNfc: function() {
     nfc.readerMode(
       nfc.FLAG_READER_NFC_A,
       this.onNfcTagReceived.bind(this),
       error => console.log("NFC reader mode failed", error)
     );
+  },
 
+  initPush: function() {
     const push = PushNotification.init({
       android: {},
       browser: {
@@ -31,17 +42,18 @@ var app = {
 
     push.on("registration", data => {
       console.log(data);
-      // data.registrationId
     });
 
     push.on("notification", data => {
       console.log(data);
-      // data.message,
-      // data.title,
-      // data.count,
-      // data.sound,
-      // data.image,
-      // data.additionalData
+      window.plugins.toast.showWithOptions({
+        message: data.message
+      });
+      this.numberOfCupsReturned = this.numberOfCupsReturned + 1;
+      this.numberOfCupsToReturn = this.numberOfCupsToReturn - 1;
+      this.percentOfCupsReturned = this.percentOfCupsReturned + 10;
+      this.numberOfCupsNotReturned = this.numberOfCupsNotReturned - 1;
+      this.updateBonusStats();
     });
 
     push.on("error", e => {
@@ -49,41 +61,94 @@ var app = {
     });
   },
 
+  onScanPress: function() {
+    cordova.plugins.barcodeScanner.scan(
+      function(result) {
+        this.sendTag(result.text);
+        window.plugins.toast.showWithOptions({
+          message: "Cup scanned",
+          duration: "long", // which is 2000 ms. "long" is 4000. Or specify the nr of ms yourself.
+          position: "bottom",
+          addPixelsY: -40 // added a negative value to move it up a bit (default 0)
+        });
+        console.log(
+          "We got a barcode\n" +
+            "Result: " +
+            result.text +
+            "\n" +
+            "Format: " +
+            result.format +
+            "\n" +
+            "Cancelled: " +
+            result.cancelled
+        );
+      }.bind(this),
+      function(error) {
+        console.log("Scanning failed: " + error);
+      },
+      {
+        prompt: "Place cup barcode inside the scan area", // Android
+        orientation: "landscape"
+      }
+    );
+  },
+
   onNfcTagReceived: function(nfcTag) {
     console.log(JSON.stringify(nfcTag));
     var nfcTagID = nfcTag.id.join();
+    this.sendTag(nfcTagID);
+    window.plugins.toast.showWithOptions({
+      message: "Cup scanned",
+      duration: "long", // which is 2000 ms. "long" is 4000. Or specify the nr of ms yourself.
+      position: "bottom",
+      addPixelsY: -40 // added a negative value to move it up a bit (default 0)
+    });
+  },
+
+  sendTag: function(tagID) {
+    this.numberOfCupsNotReturned = this.numberOfCupsNotReturned + 1;
+    this.updateBonusStats();
+
     var userID = "JAN";
 
     var data = JSON.stringify({
-      id_client: userID,
-      id_cup: nfcTagID
+      id_cl: userID,
+      id_cu: tagID
     });
 
     var xhr = new XMLHttpRequest();
     xhr.withCredentials = true;
 
-    xhr.addEventListener("readystatechange", function() {
-      if (this.readyState === 4) {
-        console.log(this.responseText);
-      }
-    });
+    xhr.addEventListener(
+      "readystatechange",
+      function() {
+        if (this.readyState === 4) {
+          console.log(this.responseText);
+        }
+      }.bind(this)
+    );
 
-    xhr.open("POST", "https://7243a96d.ngrok.io/client");
+    xhr.open("POST", "https://492375e5.ngrok.io/client");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.setRequestHeader("cache-control", "no-cache");
     xhr.send(data);
   },
 
-  // Update DOM on a Received Event
-  receivedEvent: function(id) {
-    var parentElement = document.getElementById(id);
-    var listeningElement = parentElement.querySelector(".listening");
-    var receivedElement = parentElement.querySelector(".received");
+  updateBonusStats: function() {
+    document.getElementById("numberOfCupsReturned").innerText =
+      this.numberOfCupsReturned + "/";
+    document.getElementById("numberOfCupsToReturn").innerText =
+      this.numberOfCupsToReturn + " returns until next reward";
+    document.getElementById("bonusProgressBar").style.width =
+      this.percentOfCupsReturned + "%";
 
-    listeningElement.setAttribute("style", "display:none;");
-    receivedElement.setAttribute("style", "display:block;");
-
-    console.log("Received Event: " + id);
+    if (this.numberOfCupsNotReturned > 0) {
+      document.getElementById("numberOfCupsNotReturned").style.display =
+        "block";
+    } else {
+      document.getElementById("numberOfCupsNotReturned").style.display =
+        "hidden";
+    }
   }
 };
 

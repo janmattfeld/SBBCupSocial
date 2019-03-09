@@ -1,50 +1,172 @@
 <!DOCTYPE html>
-<!--
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-     KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
--->
 <html>
-    <head>
-        <!--
-        Customize this policy to fit your own app's needs. For more guidance, see:
-            https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
-        Some notes:
-            * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
-            * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
-            * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
-                * Enable inline JS: add 'unsafe-inline' to default-src
-        -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:; ; connect-src 'self' https://7243a96d.ngrok.io">
-    
-        <meta name="format-detection" content="telephone=no">
-        <meta name="msapplication-tap-highlight" content="no">
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
-        <link rel="stylesheet" type="text/css" href="css/index.css">
-        <title>Hello World</title>
-    </head>
-    <body>
-        <div class="app">
-            <h1>Apache Cordova</h1>
-            <div id="deviceready" class="blink">
-                <p class="event listening">Connecting to Device</p>
-                <p class="event received">Device is Ready</p>
-            </div>
+  <head>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src *; 
+             style-src * 'self' 'unsafe-inline' 'unsafe-eval'; 
+             script-src * 'self' 'unsafe-inline' 'unsafe-eval';"
+    />
+
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta
+      name="viewport"
+      content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width"
+    />
+    <!--Import Google Icon Font-->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <!--Import materialize.css-->
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="css/materialize.min.css"
+      media="screen,projection"
+    />
+    <!--Custom CSS-->
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <title>SoCup</title>
+  </head>
+  <body>
+    <div class="app">
+      <nav>
+        <div class="nav-wrapper grey darken-3">
+          <a href="#!" class="brand-logo">SoCup</a>
+          <a href="#" data-target="mobile-demo" class="sidenav-trigger"
+            ><i class="material-icons">menu</i></a
+          >
+
+          <ul class="right hide-on-med-and-down">
+            <li><a href="#">Map</a></li>
+            <li><a href="#">Friends</a></li>
+            <li><a href="#">Rewards</a></li>
+            <li><a href="#">Give Back</a></li>
+          </ul>
         </div>
-        <script type="text/javascript" src="cordova.js"></script>
-        <script type="text/javascript" src="js/index.js"></script>
-    </body>
+
+        <div class="row grey darken-3">
+          <div
+            class="col s1"
+            style="margin-left: 0.5rem;margin-right: 0.5rem;margin-top: 0.5rem;"
+          >
+            <h1
+              id="numberOfCupsReturned"
+              style="margin-top: 0rem"
+              class="yellow-text darken-1"
+            >
+              6/
+            </h1>
+          </div>
+          <div
+            class="col s1"
+            style="margin-left: 1rem;margin-right: 0.5rem; padding-top: 2rem"
+          >
+            <h3 style="margin-top: 0rem" class="yellow-text lighten-3">10</h3>
+          </div>
+          <div class="col s8 right-align" style="padding-top: 0.8rem">
+            <a class="waves-effect waves-teal btn-flat white"
+              >Show Reward Details</a
+            >
+          </div>
+          <div class="col s12" style="margin-left: 0.5rem;margin-right: 0.5rem">
+            <div style="margin-bottom: 0rem" class="progress yellow lighten-3">
+              <div
+                id="bonusProgressBar"
+                class="determinate yellow darken-1"
+                style="width: 60%"
+              ></div>
+            </div>
+            <div
+              class="col s7"
+              id="numberOfCupsToReturn"
+              style="margin-bottom: 0rem;margin-top: 0"
+            >
+              4 returns until next reward
+            </div>
+            <div
+              id="numberOfCupsNotReturned"
+              class="chip col s3"
+              style="margin-left: 2rem;margin-top: 1rem; display: none"
+            >
+              Return 1
+              <i class="close material-icons">close</i>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <ul class="sidenav" id="mobile-demo">
+        <li><a href="#">Map</a></li>
+        <li><a href="#">Friends</a></li>
+        <li><a href="#">Rewards</a></li>
+        <li><a href="#">Give Back</a></li>
+      </ul>
+
+      <div class="row">
+        <div class="col s12 m7">
+          <div
+            class="card hoverable"
+            style="margin-top: 1.25rem;margin-left: 0.5rem;margin-right: 0.5rem"
+          >
+            <div class="card-image">
+              <img src="img/coffee.jpg" />
+              <span class="card-title">Bonus Card</span>
+            </div>
+            <div class="card-content">
+              <p>
+                Gain bonus points for every returned cup. Return ten cups and
+                get one free beverage of your choice.
+              </p>
+            </div>
+            <div class="card-action">
+              <a href="#">Share picture to get extra points</a>
+            </div>
+          </div>
+
+          <div
+            class="card hoverable"
+            style="margin-top: 1.25rem;margin-left: 0.5rem;margin-right: 0.5rem"
+          >
+            <div class="card-image">
+              <img src="img/fairtrade.jpg" />
+              <span class="card-title">Eco Cup</span>
+            </div>
+            <div class="card-content">
+              <p>
+                Every returned cup has a significant impact on the environment.
+                Thanks for doing your part.
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="card hoverable"
+            style="margin-top: 1.25rem;margin-left: 0.5rem;margin-right: 0.5rem"
+          >
+            <div class="card-image">
+              <img src="img/starbuckstrain.jpg" />
+              <span class="card-title">My SBB</span>
+            </div>
+            <div class="card-content">
+              <p>
+                Manage your SBB services
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fixed-action-btn" onclick="app.onScanPress()">
+        <a class="btn-floating btn-large grey darken-3">
+          <i class="large material-icons">local_drink</i>
+        </a>
+      </div>
+    </div>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/materialize.min.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+  </body>
 </html>
