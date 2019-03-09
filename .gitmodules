@@ -1,3 +1,6 @@
 [submodule "Dashboard"]
 	path = Dashboard
 	url = https://github.com/flache/socup-dashboard.git
+[submodule "Server"]
+	path = TrashScan/Server
+	url = https://github.com/faouziamrouche/SoCup.git
