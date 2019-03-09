@@ -59,3 +59,10 @@ typings/
 
 # next.js build output
 .next
+
+# Cordova
+platforms
+plugins
+
+# res
+resources/signing
