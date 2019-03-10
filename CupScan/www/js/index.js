@@ -128,7 +128,7 @@ var app = {
       }.bind(this)
     );
 
-    xhr.open("POST", "https://492375e5.ngrok.io/client");
+    xhr.open("POST", "https://f8e562f3.ngrok.io/client");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.setRequestHeader("cache-control", "no-cache");
     xhr.send(data);
